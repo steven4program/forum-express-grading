@@ -6,7 +6,6 @@ const userController = {
   signUpPage: (req, res) => {
     return res.render('signup')
   },
-
   signUp: (req, res) => {
     const { name, email, password } = req.body
     if (req.body.passwordCheck !== req.body.password) {
@@ -30,6 +29,18 @@ const userController = {
         }
       })
     }
+  },
+  signInPage: (req, res) => {
+    return res.render('signin')
+  },
+  signIn: (req, res) => {
+    req.flash('success_messages', 'Login successfully!')
+    res.redirect('/restaurants')
+  },
+  logout: (req, res) => {
+    req.flash('success_messages', 'Logout successfully!')
+    req.logout()
+    res.redirect('/signin')
   }
 }
 
