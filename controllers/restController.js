@@ -1,9 +1,6 @@
 const db = require('../models')
 const restaurant = require('../models/restaurant')
-const Restaurant = db.Restaurant
-const Category = db.Category
-const Comment = db.Comment
-const User = db.User
+const { Restaurant, Category, Comment, User } = db
 
 const pageLimit = 10
 
