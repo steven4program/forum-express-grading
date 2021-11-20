@@ -1,6 +1,11 @@
 const bcrypt = require('bcryptjs')
 const db = require('../models')
-const User = db.User
+const helpers = require('../_helpers')
+const { Op } = require('sequelize')
+const { User, Restaurant, Comment } = db
+
+const imgur = require('imgur-node-api')
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 const userController = {
   signUpPage: (req, res) => {
@@ -41,6 +46,75 @@ const userController = {
     req.flash('success_messages', 'Logout successfully!')
     req.logout()
     res.redirect('/signin')
+  },
+  getUser: (req, res) => {
+    return User.findByPk(req.params.id).then((user) => {
+      return res.render('profile', { user: user.toJSON() })
+    })
+  },
+  editUser: (req, res) => {
+    return User.findByPk(req.params.id).then((user) => {
+      return res.render('edit', { user: user.toJSON() })
+    })
+  },
+  putUser: (req, res) => {
+    const { file } = req
+    const { name, email } = req.body
+    // prevent user editing other user's profile
+    if (Number(req.params.id) !== Number(helpers.getUser(req).id)) {
+      req.flash('error_messages', '不能編輯其他使用者的資料')
+      return res.redirect(`/users/${req.params.id}`)
+    }
+
+    // check if name or email is valid
+    if (!name || !email) {
+      req.flash('error_messages', 'Name or Email field is empty')
+      return res.redirect('back')
+    }
+
+    // Can't change to an email which has already been registered
+    // User.findOne({ where: { email, [Op.not]: { id: req.params.id } } }).then(
+    //   (emailCheck) => {
+    //     if (emailCheck) {
+    //       req.flash('error_messages', 'This email has already been registered')
+    //       return res.redirect('back')
+    //     }
+    //   }
+    // )
+
+    // if the action involve changing profile image
+    if (file) {
+      imgur.setClientID(IMGUR_CLIENT_ID)
+      imgur.upload(file.path, (err, img) => {
+        return User.findByPk(req.params.id).then((user) => {
+          user
+            .update({
+              name,
+              email,
+              image: file ? img.data.link : user.image
+            })
+            .then((user) => {
+              req.flash('success_messages', '使用者資料編輯成功')
+              return res.redirect(`/users/${req.params.id}`)
+            })
+        })
+      })
+      // if the action doesn't involve changing profile image
+    } else {
+      return User.findByPk(req.params.id).then((user) => {
+        user
+          .update({
+            name,
+            email,
+            image: user.image
+          })
+          .then((user) => {
+            req.flash('success_messages', '使用者資料編輯成功')
+            return res.redirect(`/users/${req.params.id}`)
+          })
+          .catch((error) => console.log(error))
+      })
+    }
   }
 }
 
