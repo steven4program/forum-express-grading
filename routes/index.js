@@ -140,4 +140,10 @@ module.exports = (app, passport) => {
     upload.single('image'),
     userController.putUser
   )
+  app.post('/favorite/:restaurantId', authenticated, userController.addFavorite)
+  app.delete(
+    '/favorite/:restaurantId',
+    authenticated,
+    userController.removeFavorite
+  )
 }
