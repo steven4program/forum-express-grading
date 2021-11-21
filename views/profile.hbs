@@ -22,3 +22,17 @@
     </div>
   </div>
 </div>
+
+  <div class="col-md-6">
+    <div class="card mt-5">
+      <h6 class="card-header">已評論餐廳：</h6>
+      <div class="card-body">
+        {{#each user.Comments}}
+        <a href="/restaurants/{{this.RestaurantId}}" style="display: inline-block;">
+          <p>{{this.Restaurant.name}}</p>
+          <img src="{{this.Restaurant.image}}" class="m-2" style="width: 5rem; height: 5rem; border-radius:50%;">
+        </a>
+        {{/each}}
+      </div>
+    </div>
+  </div>
