@@ -132,6 +132,7 @@ module.exports = (app, passport) => {
     commentController.deleteComment
   )
 
+  app.get('/users/top', authenticated, userController.getTopUser)
   app.get('/users/:id', authenticated, userController.getUser)
   app.get('/users/:id/edit', authenticated, userController.editUser)
   app.put(
@@ -152,4 +153,12 @@ module.exports = (app, passport) => {
   // switch between like/unlike
   app.post('/like/:restaurantId', authenticated, userController.addLike)
   app.delete('/like/:restaurantId', authenticated, userController.removeLike)
+
+  // switch between follow/unfollow
+  app.post('/following/:userId', authenticated, userController.addFollowing)
+  app.delete(
+    '/following/:userId',
+    authenticated,
+    userController.removeFollowing
+  )
 }
