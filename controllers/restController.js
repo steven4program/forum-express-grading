@@ -1,4 +1,5 @@
 const db = require('../models')
+const helpers = require('../_helpers')
 const { Restaurant, Category, Comment, User } = db
 
 const pageLimit = 10
@@ -110,6 +111,24 @@ const restController = {
       include: [Category, { model: Comment, include: [User] }]
     }).then((restaurant) => {
       return res.render('dashboard', { restaurant: restaurant.toJSON() })
+    })
+  },
+  getTopRestaurant: (req, res) => {
+    return Restaurant.findAll({
+      include: [{ model: User, as: 'FavoritedUsers' }]
+    }).then((restaurants) => {
+      restaurants = restaurants
+        .map((r) => ({
+          ...r.dataValues,
+          favoritedCount: r.dataValues.FavoritedUsers.length,
+          isFavorited: helpers
+            .getUser(req)
+            .FavoritedRestaurants.map((d) => d.id)
+            .includes(r.id)
+        }))
+        .sort((a, b) => b.favoritedCount - a.favoritedCount)
+        .slice(0, 10)
+      return res.render('topRestaurant', { restaurants })
     })
   }
 }

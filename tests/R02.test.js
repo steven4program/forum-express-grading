@@ -3,14 +3,9 @@ const request = require('supertest')
 const sinon = require('sinon')
 const should = chai.should()
 
-const helpers = require('../_helpers')
+const helpers = require('../_helpers');
 
-const {
-  createModelMock,
-  createControllerProxy,
-  mockRequest,
-  mockResponse
-} = require('../helpers/unitTestHelpers')
+const { createModelMock, createControllerProxy, mockRequest, mockResponse } = require('../helpers/unitTestHelpers');
 
 describe('# R02', () => {
   describe('# R02: 建立 User Profile', function () {
@@ -32,10 +27,7 @@ describe('# R02', () => {
         })
 
         // 修改 userController 中的資料庫連線設定，由連向真實的資料庫 -> 改為連向模擬的 User table
-        this.userController = createControllerProxy(
-          '../controllers/userController',
-          { User: this.UserMock }
-        )
+        this.userController = createControllerProxy('../controllers/userController', { User: this.UserMock })
       })
 
       // 開始測試
@@ -80,10 +72,7 @@ describe('# R02', () => {
         })
 
         // 連向模擬的 User table
-        this.userController = createControllerProxy(
-          '../controllers/userController',
-          { User: this.UserMock }
-        )
+        this.userController = createControllerProxy('../controllers/userController', { User: this.UserMock })
       })
 
       it(' GET /users/:id/edit ', async () => {
@@ -125,10 +114,7 @@ describe('# R02', () => {
         })
 
         // 連向模擬的 User table
-        this.userController = createControllerProxy(
-          '../controllers/userController',
-          { User: this.UserMock }
-        )
+        this.userController = createControllerProxy('../controllers/userController', { User: this.UserMock })
       })
 
       it(' PUT /users/:id ', async () => {

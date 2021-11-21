@@ -3,12 +3,7 @@ const request = require('supertest')
 const should = chai.should()
 
 const app = require('../app')
-const {
-  createModelMock,
-  createControllerProxy,
-  mockRequest,
-  mockResponse
-} = require('../helpers/unitTestHelpers')
+const { createModelMock, createControllerProxy, mockRequest, mockResponse } = require('../helpers/unitTestHelpers');
 
 describe('# R01', () => {
   describe('登入測試: POST /signin', function () {
@@ -61,10 +56,7 @@ describe('# R01', () => {
       })
 
       // 修改 adminController 中的資料庫連線設定，由連向真實的資料庫 -> 改為連向模擬的 User table
-      this.adminController = createControllerProxy(
-        '../controllers/adminController',
-        { User: this.UserMock }
-      )
+      this.adminController = createControllerProxy('../controllers/adminController', { User: this.UserMock })
     })
 
     // 開始測試
@@ -96,10 +88,7 @@ describe('# R01', () => {
         })
 
         // 將 adminController 中的 User db 取代成 User mock db
-        this.adminController = createControllerProxy(
-          '../controllers/adminController',
-          { User: this.UserMock }
-        )
+        this.adminController = createControllerProxy('../controllers/adminController', { User: this.UserMock })
       })
 
       it(' PUT /admin/users/:id/toggleAdmin ', async () => {
@@ -131,10 +120,7 @@ describe('# R01', () => {
           isAdmin: false // 非管理者
         })
         // 將 adminController 中的 User db 取代成 User mock db
-        this.adminController = createControllerProxy(
-          '../controllers/adminController',
-          { User: this.UserMock }
-        )
+        this.adminController = createControllerProxy('../controllers/adminController', { User: this.UserMock })
       })
 
       it(' PUT /admin/users/:id/toggleAdmin ', async () => {
