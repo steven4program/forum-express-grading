@@ -78,49 +78,49 @@ const userController = {
     }
 
     // Can't change to an email which has already been registered
-    // User.findOne({ where: { email, [Op.not]: { id: userId } } }).then(
-    //   (emailCheck) => {
-    //     if (emailCheck) {
-    //       req.flash('error_messages', 'This email has already been registered')
-    //       return res.redirect('back')
-    //     }
-    //   }
-    // )
-
-    // if the action involve changing profile image
-    if (file) {
-      imgur.setClientID(IMGUR_CLIENT_ID)
-      imgur.upload(file.path, (err, img) => {
-        return User.findByPk(userId).then((user) => {
-          user
-            .update({
-              name,
-              email,
-              image: file ? img.data.link : user.image
+    User.findOne({ where: { email, [Op.not]: { id: userId } } }).then(
+      (emailCheck) => {
+        if (emailCheck) {
+          req.flash('error_messages', 'This email has already been registered')
+          return res.redirect('back')
+        } else {
+          // if the action involve changing profile image
+          if (file) {
+            imgur.setClientID(IMGUR_CLIENT_ID)
+            imgur.upload(file.path, (err, img) => {
+              return User.findByPk(userId).then((user) => {
+                user
+                  .update({
+                    name,
+                    email,
+                    image: file ? img.data.link : user.image
+                  })
+                  .then((user) => {
+                    req.flash('success_messages', '使用者資料編輯成功')
+                    return res.redirect(`/users/${userId}`)
+                  })
+                  .catch((error) => console.log(error))
+              })
             })
-            .then((user) => {
-              req.flash('success_messages', '使用者資料編輯成功')
-              return res.redirect(`/users/${userId}`)
+            // if the action doesn't involve changing profile image
+          } else {
+            return User.findByPk(userId).then((user) => {
+              user
+                .update({
+                  name,
+                  email,
+                  image: user.image
+                })
+                .then((user) => {
+                  req.flash('success_messages', '使用者資料編輯成功')
+                  return res.redirect(`/users/${userId}`)
+                })
+                .catch((error) => console.log(error))
             })
-            .catch((error) => console.log(error))
-        })
-      })
-      // if the action doesn't involve changing profile image
-    } else {
-      return User.findByPk(userId).then((user) => {
-        user
-          .update({
-            name,
-            email,
-            image: user.image
-          })
-          .then((user) => {
-            req.flash('success_messages', '使用者資料編輯成功')
-            return res.redirect(`/users/${userId}`)
-          })
-          .catch((error) => console.log(error))
-      })
-    }
+          }
+        }
+      }
+    )
   },
   addFavorite: (req, res) => {
     const RestaurantId = req.params.restaurantId
