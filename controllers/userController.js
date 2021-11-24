@@ -186,13 +186,14 @@ const userController = {
     return User.findAll({
       include: [{ model: User, as: 'Followers' }]
     }).then((users) => {
+      const currentUser = helpers.getUser(req)
       users = users.map((user) => ({
         ...user.dataValues,
         FollowerCount: user.Followers.length,
         isFollowed: req.user.Followings.map((d) => d.id).includes(user.id)
       }))
       users = users.sort((a, b) => b.FollowerCount - a.FollowerCount)
-      return res.render('topUser', { users: users })
+      return res.render('topUser', { users, currentUser })
     })
   },
   addFollowing: (req, res) => {
