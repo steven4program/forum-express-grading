@@ -50,9 +50,25 @@ const userController = {
   getUser: (req, res) => {
     const userId = req.params.id
     return User.findByPk(userId, {
-      include: { model: Comment, include: Restaurant }
+      include: [
+        { model: Comment, include: Restaurant },
+        { model: User, as: 'Followings' },
+        { model: User, as: 'Followers' },
+        { model: Restaurant, as: 'FavoritedRestaurants' }
+      ]
     }).then((user) => {
-      return res.render('profile', { user: user.toJSON() })
+      const thisUser = user.toJSON()
+      const currentUser = helpers.getUser(req)
+
+      if (thisUser.Comments) {
+        thisUser.Comments = helpers.removeDuplicateComment(thisUser.Comments)
+      }
+
+      thisUser.isFollowed = helpers
+        .getUser(req)
+        .Followings.map((d) => d.id)
+        .includes(user.id)
+      return res.render('profile', { user: thisUser, currentUser })
     })
   },
   editUser: (req, res) => {
