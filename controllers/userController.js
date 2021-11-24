@@ -50,9 +50,25 @@ const userController = {
   getUser: (req, res) => {
     const userId = req.params.id
     return User.findByPk(userId, {
-      include: { model: Comment, include: Restaurant }
+      include: [
+        { model: Comment, include: Restaurant },
+        { model: User, as: 'Followings' },
+        { model: User, as: 'Followers' },
+        { model: Restaurant, as: 'FavoritedRestaurants' }
+      ]
     }).then((user) => {
-      return res.render('profile', { user: user.toJSON() })
+      const thisUser = user.toJSON()
+      const currentUser = helpers.getUser(req)
+
+      if (thisUser.Comments) {
+        thisUser.Comments = helpers.removeDuplicateComment(thisUser.Comments)
+      }
+
+      thisUser.isFollowed = helpers
+        .getUser(req)
+        .Followings.map((d) => d.id)
+        .includes(user.id)
+      return res.render('profile', { user: thisUser, currentUser })
     })
   },
   editUser: (req, res) => {
@@ -170,13 +186,14 @@ const userController = {
     return User.findAll({
       include: [{ model: User, as: 'Followers' }]
     }).then((users) => {
+      const currentUser = helpers.getUser(req)
       users = users.map((user) => ({
         ...user.dataValues,
         FollowerCount: user.Followers.length,
         isFollowed: req.user.Followings.map((d) => d.id).includes(user.id)
       }))
       users = users.sort((a, b) => b.FollowerCount - a.FollowerCount)
-      return res.render('topUser', { users: users })
+      return res.render('topUser', { users, currentUser })
     })
   },
   addFollowing: (req, res) => {

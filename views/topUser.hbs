@@ -24,12 +24,20 @@
     <h2>{{this.name}}</h2>
     <span class="badge badge-secondary">追蹤人數：{{this.FollowerCount}}</span>
     <p>
-      {{#if this.isFollowed }}
-    <form action="/following/{{this.id}}?_method=DELETE" method="POST" style="display: contents;"><button type="submit"
-              class="btn btn-danger">取消追蹤</button></form>
+    {{#if this.isFollowed }}
+      <form action="/following/{{this.id}}?_method=DELETE" method="POST" style="display: contents;"><button type="submit"
+                class="btn btn-danger">取消追蹤</button></form>
     {{else}}
-    <form action="/following/{{this.id}}" method="POST" style="display: contents;"><button type="submit"
+      {{#ifCond ../currentUser.id this.id}}
+        <form style="display: contents;">
+          <button type="submit" class="btn btn-secondary btn-lg" disabled>
+            You
+          </button>
+        </form>
+      {{else}}
+        <form action="/following/{{this.id}}" method="POST" style="display: contents;"><button type="submit"
               class="btn btn-primary">追蹤</button></form>
+      {{/ifCond}}
     {{/if}}
     </p>
   </div>
