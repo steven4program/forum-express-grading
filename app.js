@@ -4,6 +4,7 @@ const db = require('./models')
 const flash = require('connect-flash')
 const session = require('express-session')
 const helpers = require('./_helpers')
+const bodyParser = require('body-parser')
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
@@ -24,7 +25,8 @@ app.engine(
   })
 )
 app.set('view engine', 'hbs')
-app.use(express.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }))
 app.use(passport.initialize())
 app.use(passport.session())
