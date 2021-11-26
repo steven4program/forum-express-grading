@@ -11,16 +11,14 @@ const categoryController = {
     })
   },
   postCategory: (req, res) => {
-    const { name } = req.body
-    if (!name) {
-      req.flash('error_message', "name didn't exist")
-    } else {
-      return Category.create({
-        name
-      }).then((category) => {
-        res.redirect('/admin/categories')
-      })
-    }
+    adminService.postCategory(req, res, (data) => {
+      if (data['status'] === 'error') {
+        req.flash('error_message', data['message'])
+        return res.redirect('back')
+      }
+      req.flash('success_message', data['message'])
+      res.redirect('/admin/categories')
+    })
   },
   putCategory: (req, res) => {
     const { name } = req.body

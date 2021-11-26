@@ -15,6 +15,21 @@ const categoryService = {
         callback({ categories })
       }
     })
+  },
+  postCategory: (req, res, callback) => {
+    const { name } = req.body
+    if (!name) {
+      return callback({ status: 'error', message: "name didn't exist" })
+    } else {
+      return Category.create({
+        name
+      }).then((category) => {
+        callback({
+          status: 'success',
+          message: 'category was successfully created'
+        })
+      })
+    }
   }
 }
 
