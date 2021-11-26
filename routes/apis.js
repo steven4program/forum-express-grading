@@ -12,6 +12,7 @@ router.post(
   adminController.postRestaurant
 )
 router.get('/admin/restaurants', adminController.getRestaurants)
+router.put('/admin/restaurants/:id', adminController.putRestaurant)
 router.get('/admin/restaurants/:id', adminController.getRestaurant)
 router.post(
   '/admin/restaurants',
